@@ -9,37 +9,19 @@ type Category = {
   id: number;
 };
 
-// export function useCategories() {
-//   const fetchData = async () => {
-//     try {
-//       const { data } = await fetch("http://localhost:8000/categories");
-//       return data.results;
-//     } catch (error) {
-//       console.error("Error fetching data:", error);
-//       return [];
-//     }
-//   };
-
-//   return {
-//     fetchData,
-//   };
-// }
-
-export async function fetchCategories() {
+const fetchCategories = async () => {
   try {
-    const response = await fetch("http://localhost:8000/categories");
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/categories/`
+    );
+    console.log(response.data.results);
 
-    if (response.status === 200) {
-      const data = await response.json();
-      return data.results;
-    } else {
-      throw new Error("Error fetching categories data");
-    }
+    return response.data.results;
   } catch (err) {
     console.error("Error fetching categories data:", err);
     throw err;
   }
-}
+};
 
 export default function Home() {
   const data = fetchCategories();
