@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily:{
-        'roboto': ['Roboto Flex']
+        'roboto': ['Roboto Flex'],
       }
     },
   },
