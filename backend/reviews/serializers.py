@@ -25,15 +25,17 @@ class ReviewSerializer(serializers.HyperlinkedModelSerializer):
 
 class BusinessSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
+    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Business
+        depth = 1
         fields = "__all__"
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
-    business = BusinessSerializer(many=True)
+    business = BusinessSerializer(many=True, read_only=True)
 
     class Meta:
         model = Category

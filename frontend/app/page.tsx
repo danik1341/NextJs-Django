@@ -3,6 +3,7 @@
 import { Avatar, Card, CardHeader, Grid } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Category = {
   name: string;
@@ -14,7 +15,6 @@ const fetchCategories = async () => {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/categories/`
     );
-    console.log(response.data.results);
 
     return response.data.results;
   } catch (err) {
@@ -26,6 +26,7 @@ const fetchCategories = async () => {
 export default function Home() {
   const data = fetchCategories();
   const [categories, setCategories] = useState<Category[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +45,10 @@ export default function Home() {
     <Grid container spacing={3} className="mx-auto my-6 max-w-[95vw]">
       {categories.map((category, index) => (
         <Grid item xs={12} md={4} key={index}>
-          <Card>
+          <Card
+            onClick={() => router.push(`/categories/${category.id}/`)}
+            className=" cursor-pointer"
+          >
             <CardHeader
               avatar={<Avatar aria-label="category">C</Avatar>}
               title={`${category.name}`}
