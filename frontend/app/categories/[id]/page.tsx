@@ -4,6 +4,11 @@ import { Box, Card, CardContent, Grid, Link, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AverageReview from "@/components/AverageReview";
+
+type Review = {
+  stars: number;
+};
 
 type Business = {
   url: string;
@@ -17,6 +22,7 @@ type Business = {
   country: string;
   phone: string;
   hours: string;
+  reviews: Review[];
   id: number;
 };
 
@@ -66,6 +72,18 @@ const Category: React.FC<CategoryDetailsProps> = ({ params }) => {
     router.push(`/business/${id}`);
   };
 
+  const getAvgReviews = (reviews: Review[]) => {
+    let avgReviews = 0;
+    let totalReviews = 0;
+    if (reviews) {
+      reviews.map((review) => {
+        totalReviews += review.stars;
+      });
+      avgReviews = totalReviews / reviews.length;
+    }
+    return avgReviews;
+  };
+
   return (
     <Grid container className=" mt-6 max-w-[95vw]">
       <Grid item xs={12} md={3}>
@@ -103,7 +121,7 @@ const Category: React.FC<CategoryDetailsProps> = ({ params }) => {
                   </Grid>
 
                   <Grid item xs={6}>
-                    <Typography variant="h5">Todo Reviews</Typography>
+                    <AverageReview value={getAvgReviews(business.reviews)} />
                     <Typography variant="subtitle1">
                       {business.hours}
                     </Typography>
