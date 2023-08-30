@@ -1,5 +1,6 @@
 "use client";
 
+import AverageReview from "@/components/AverageReview";
 import {
   Button,
   Card,
@@ -13,6 +14,10 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
+type Review = {
+  stars: number;
+};
+
 type Business = {
   url: string;
   name: string;
@@ -25,6 +30,7 @@ type Business = {
   country: string;
   phone: string;
   hours: string;
+  reviews: Review[];
   id: number;
 };
 
@@ -60,12 +66,25 @@ const Business: React.FC<BusinessProps> = ({ params }) => {
 
     fetchData();
   }, [id]);
+
+  const getAvgReviews = () => {
+    let avgReviews = 0;
+    let totalReviews = 0;
+    if (business) {
+      business.reviews.map((review) => {
+        totalReviews += review.stars;
+      });
+      avgReviews = totalReviews / business.reviews.length;
+    }
+    return avgReviews;
+  };
+
   return (
     <Grid container className=" mt-20 max-w-[95vw] p-4">
       <Grid item xs={12} md={6}>
         <Typography variant="h2">{business?.name}</Typography>
         <Typography variant="h4">{business?.price_range}</Typography>
-        <Typography variant="subtitle1">Todo Review Component</Typography>
+        <AverageReview value={getAvgReviews()} />
 
         <div className=" mt-4">
           <Button variant="contained" className=" bg-blue-600">
