@@ -15,17 +15,26 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ["url", "name"]
 
 
-class ReviewSerializer(serializers.HyperlinkedModelSerializer):
+class ReviewReadSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
         model = Review
+        depth = 1
         fields = "__all__"
 
 
-class BusinessSerializer(serializers.HyperlinkedModelSerializer):
+class ReviewWriteSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
-    reviews = ReviewSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Review
+        fields = ["id", "url", "title", "content", "stars", "business"]
+
+
+class BusinessReadSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+    reviews = ReviewReadSerializer(many=True, read_only=True)
 
     class Meta:
         model = Business
@@ -33,11 +42,23 @@ class BusinessSerializer(serializers.HyperlinkedModelSerializer):
         fields = "__all__"
 
 
-class CategorySerializer(serializers.HyperlinkedModelSerializer):
+class BusinessWriteSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Business
+        fields = "__all__"
+
+
+class CategoryReadSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
-    business = BusinessSerializer(many=True, read_only=True)
+    business = BusinessReadSerializer(many=True, read_only=True)
 
     class Meta:
         model = Category
         depth = 1
+        fields = "__all__"
+
+
+class CategoryWriteSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Category
         fields = "__all__"
