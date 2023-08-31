@@ -6,7 +6,7 @@ class Review(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     stars = models.DecimalField(max_digits=2, decimal_places=1)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     business = models.ForeignKey(
         "Business", on_delete=models.CASCADE, related_name="reviews"
     )
@@ -41,6 +41,6 @@ class Business(models.Model):
     region = models.CharField(max_length=50)
     postal_code = models.CharField(max_length=50)
     country = models.CharField(max_length=50)
-    url = models.URLField(max_length=255)
+    website = models.URLField(max_length=255)
     phone = models.CharField(max_length=255)
     hours = models.CharField(max_length=255)
