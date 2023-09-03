@@ -59,6 +59,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
         else:
             return CategoryReadSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(ordinal=Category.objects.latest("ordinal").ordinal + 1)
+
 
 class UserAPIView(RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]

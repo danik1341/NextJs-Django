@@ -14,8 +14,8 @@ class Review(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
-    ordinal = models.IntegerField()
-    business = models.ManyToManyField("Business")
+    ordinal = models.IntegerField(blank=True, null=True)
+    business = models.ManyToManyField("Business", blank=True)
 
 
 class Business(models.Model):
@@ -44,3 +44,4 @@ class Business(models.Model):
     website = models.URLField(max_length=255)
     phone = models.CharField(max_length=255)
     hours = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
