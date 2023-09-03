@@ -15,27 +15,12 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 
-type AddBusinessProps = {};
-
-type Category = {
-  name: string;
-  id: number;
+type AddBusinessByIdProps = {
+  params: { id: string };
 };
 
-const fetchCategories = async () => {
-  try {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/categories/`
-    );
-
-    return response.data.results;
-  } catch (err) {
-    console.error("Error fetching categories data:", err);
-    throw err;
-  }
-};
-
-const AddBusiness: React.FC<AddBusinessProps> = () => {
+const AddBusinessById: React.FC<AddBusinessByIdProps> = ({ params }) => {
+  const id = params.id;
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [priceRange, setPriceRange] = useState("");
@@ -47,21 +32,14 @@ const AddBusiness: React.FC<AddBusinessProps> = () => {
   const [website, setWebsite] = useState("");
   const [phone, setPhone] = useState("");
   const [hours, setHours] = useState("");
-  const [categoryId, setCategoryId] = useState("");
   const [submitError, setSubmitError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const [categories, setCategories] = useState<Category[]>([]);
-
   const router = useRouter();
-  const { user, accessToken, cookieValue } = useContext(AuthContext);
+  const { user, accessToken } = useContext(AuthContext);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     setPriceRange(event.target.value);
-  };
-
-  const handleChangeCategory = (event: SelectChangeEvent<string>) => {
-    setCategoryId(event.target.value);
   };
 
   const handleSubmit = async () => {
@@ -80,6 +58,7 @@ const AddBusiness: React.FC<AddBusinessProps> = () => {
             website,
             phone,
             hours,
+            user: user.url,
           },
           {
             headers: {
@@ -90,7 +69,7 @@ const AddBusiness: React.FC<AddBusinessProps> = () => {
         if (businessResponse.status === 201) {
           const newBusiness = businessResponse.data;
           const categoryResponse = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/categories/${categoryId}/`
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/categories/${id}/`
           );
           const existingCategory = categoryResponse.data;
           const businessUrls = existingCategory.business.map(
@@ -105,7 +84,7 @@ const AddBusiness: React.FC<AddBusinessProps> = () => {
           };
 
           await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/categories/${categoryId}/`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/categories/${id}/`,
             updatedCategory,
             {
               headers: {
@@ -114,7 +93,7 @@ const AddBusiness: React.FC<AddBusinessProps> = () => {
             }
           );
 
-          router.push(`/categories/${categoryId}`);
+          router.push(`/categories/${id}`);
         } else {
           setSubmitError(true);
           setErrorMsg("Failed to add business. Please try again.");
@@ -127,33 +106,11 @@ const AddBusiness: React.FC<AddBusinessProps> = () => {
     }
   };
 
-  const checkUser = async () => {
-    if (user) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
   useEffect(() => {
-    const checkedUser = checkUser();
-    if (!checkedUser) {
-      router.push(`/categories/`);
+    if (!user) {
+      router.push(`/categories/${id}/`);
     }
   });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Error fetching categories data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <div className=" my-20 mx-auto max-w-[95vw]">
@@ -266,26 +223,6 @@ const AddBusiness: React.FC<AddBusinessProps> = () => {
             </div>
 
             <div>
-              <InputLabel shrink htmlFor="category">
-                Category
-              </InputLabel>
-              <Select
-                native
-                className=" w-full"
-                onChange={handleChangeCategory}
-                inputProps={{
-                  id: "category",
-                }}
-              >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </Select>
-            </div>
-
-            <div>
               <Button
                 variant="contained"
                 className=" bg-blue-500 w-full"
@@ -305,4 +242,4 @@ const AddBusiness: React.FC<AddBusinessProps> = () => {
     </div>
   );
 };
-export default AddBusiness;
+export default AddBusinessById;

@@ -15,10 +15,17 @@ import {
   Skeleton,
   Typography,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AverageReview from "@/components/AverageReview";
+import { AuthContext } from "@/utils/AuthContext";
+
+type User = {
+  username: string;
+  url: string;
+};
 
 type Review = {
   stars: number;
@@ -37,6 +44,7 @@ type Business = {
   phone: string;
   hours: string;
   reviews: Review[];
+  user: User;
   id: number;
 };
 
@@ -71,6 +79,8 @@ const Category: React.FC<CategoryDetailsProps> = ({ params }) => {
   const [numReviews, setNumReviews] = useState<number | null>();
   const [avgReview, setAvgReview] = useState<number | null>();
   const router = useRouter();
+
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,7 +118,7 @@ const Category: React.FC<CategoryDetailsProps> = ({ params }) => {
   };
 
   return (
-    <Grid container className=" mt-6 max-w-[95vw]">
+    <Grid container className=" mt-6 max-w-[95vw] space-y-4">
       <Grid item xs={12} md={3}>
         <Box className=" my-0 mx-6 space-y-2">
           <Grid container>
@@ -196,6 +206,18 @@ const Category: React.FC<CategoryDetailsProps> = ({ params }) => {
                 Clear Filters
               </Button>
             </Grid>
+
+            {user && (
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  className=" mt-4 w-full bg-blue-500"
+                  onClick={() => router.push(`/business/${id}/add/`)}
+                >
+                  Add Business
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Box>
       </Grid>
@@ -253,6 +275,29 @@ const Category: React.FC<CategoryDetailsProps> = ({ params }) => {
                               {business.region} {business.postal_code}{" "}
                               {business.country}
                             </Typography>
+                            {user &&
+                              user.url !== null &&
+                              business.user.url === user.url && (
+                                <>
+                                  <Typography variant="subtitle1">
+                                    Owner{" "}
+                                    <CheckCircleIcon className=" text-green-600" />
+                                  </Typography>
+                                  <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    className=" mt-2 hover:bg-purple-300"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      router.push(
+                                        `/business/${business.id}/updateOrdelete/`
+                                      );
+                                    }}
+                                  >
+                                    Update/Delete
+                                  </Button>
+                                </>
+                              )}
                           </Grid>
                         </Grid>
                       </CardContent>

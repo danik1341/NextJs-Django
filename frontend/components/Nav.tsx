@@ -14,6 +14,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import CategoryIcon from "@mui/icons-material/Category";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { useRouter } from "next/navigation";
 import { AuthContext } from "@/utils/AuthContext";
@@ -30,7 +31,6 @@ const Nav: React.FC = () => {
 
   const handleLogOut = () => {
     logout();
-    // router.push("/account/login");
   };
   return (
     <AppBar position="static">
@@ -52,6 +52,13 @@ const Nav: React.FC = () => {
                   <HomeIcon />
                 </ListItemIcon>
                 <ListItemText primary="Home" />
+              </ListItemButton>
+
+              <ListItemButton onClick={() => router.push("/categories/")}>
+                <ListItemIcon className=" hover:text-black">
+                  <CategoryIcon />
+                </ListItemIcon>
+                <ListItemText primary="Categories" />
               </ListItemButton>
 
               {user ? (

@@ -9,6 +9,7 @@ interface AuthContextProps {
   user: any;
   accessToken: string | null;
   error: string;
+  cookieValue: string | null;
   login: (credentials: { username: string; password: string }) => Promise<void>;
   register: (credentials: {
     username: string;
@@ -22,6 +23,7 @@ export const AuthContext = createContext<AuthContextProps>({
   user: null,
   accessToken: null,
   error: "",
+  cookieValue: null,
   login: async () => {},
   register: async () => {},
   logout: async () => {},
@@ -113,6 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           );
 
           const access = response.data.access;
+          setAccessToken(access);
 
           const userConfig = {
             headers: {
@@ -149,10 +152,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     getUserAfterRefresh();
   }, [cookieValue]);
 
+  // useEffect(() => {
+  //   getUserAfterRefresh();
+  // }, [accessToken]);
+
   const contextValue: AuthContextProps = {
     user,
     accessToken,
     error,
+    cookieValue,
     login,
     register,
     logout,

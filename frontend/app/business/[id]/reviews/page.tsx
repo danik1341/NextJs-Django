@@ -1,5 +1,6 @@
 "use client";
 
+import { AuthContext } from "@/utils/AuthContext";
 import {
   Button,
   FormControl,
@@ -12,7 +13,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 type AddReviewProps = {
   params: { id: string };
@@ -43,6 +44,8 @@ const AddReview: React.FC<AddReviewProps> = ({ params }) => {
   const [comment, setComment] = useState("");
   const [business, setBusiness] = useState<Business>();
 
+  const { user } = useContext(AuthContext);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,7 +65,6 @@ const AddReview: React.FC<AddReviewProps> = ({ params }) => {
       const cookies = document.cookie.split(";");
       for (let i = 0; i < cookies.length; i++) {
         const cookie = cookies[i].trim();
-        // Does this cookie string begin with the name we want?
         if (cookie.substring(0, name.length + 1) === `${name}=`) {
           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
           break;
@@ -88,6 +90,7 @@ const AddReview: React.FC<AddReviewProps> = ({ params }) => {
       content: comment,
       stars,
       business: business!.url,
+      user: user.url,
     };
 
     try {

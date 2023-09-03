@@ -1,11 +1,13 @@
 "use client";
 
 import AverageReview from "@/components/AverageReview";
+import { AuthContext } from "@/utils/AuthContext";
 import {
   Box,
   Button,
   Card,
   CardContent,
+  CardHeader,
   Divider,
   FormControl,
   Grid,
@@ -21,12 +23,17 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 type Review = {
   stars: number;
   title: string;
   content: string;
+};
+
+type User = {
+  username: string;
+  url: string;
 };
 
 type Business = {
@@ -43,6 +50,7 @@ type Business = {
   hours: string;
   reviews: Review[];
   id: number;
+  user: User;
 };
 
 type BusinessProps = {
@@ -66,6 +74,8 @@ const Business: React.FC<BusinessProps> = ({ params }) => {
   const router = useRouter();
   const [business, setBusiness] = useState<Business>();
   const [reviewFilter, setReviewFilter] = useState<string>("0");
+
+  const { user, accessToken } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,6 +142,25 @@ const Business: React.FC<BusinessProps> = ({ params }) => {
             )}
           </div>
         </Grid>
+
+        {user &&
+          business &&
+          user.url !== null &&
+          business.user.url === user.url && (
+            <div className=" p-4">
+              <Button
+                variant="outlined"
+                color="secondary"
+                className=" mt-2 hover:bg-purple-300"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/business/${business.id}/updateOrdelete/`);
+                }}
+              >
+                Update/Delete
+              </Button>
+            </div>
+          )}
 
         <Grid item xs={12} md={6}>
           <Card>
@@ -240,26 +269,43 @@ const Business: React.FC<BusinessProps> = ({ params }) => {
         </Grid>
 
         <Grid item xs={12} md={8} className=" my-0 mx-auto">
-          {business && business.reviews ? (
-            business.reviews.map(
-              (review, index) =>
-                parseInt(reviewFilter) <= review.stars && (
-                  <Card key={index} className=" my-6">
-                    <Box>
-                      <CardContent>
-                        <AverageReview value={review.stars} />
-                        <Typography variant="h5">{review.title}</Typography>
-                        <Typography variant="subtitle1">
-                          {review.content}
-                        </Typography>
-                      </CardContent>
-                    </Box>
+          {business && business.reviews.length > 0
+            ? business.reviews.map(
+                (review, index) =>
+                  parseInt(reviewFilter) <= review.stars && (
+                    <Card key={index} className=" my-6">
+                      <Box>
+                        <CardContent>
+                          <AverageReview value={review.stars} />
+                          <Typography variant="h5">{review.title}</Typography>
+                          <Typography variant="subtitle1">
+                            {review.content}
+                          </Typography>
+                        </CardContent>
+                      </Box>
+                    </Card>
+                  )
+              )
+            : Array.from({ length: 4 }).map((_, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                  <Card className="my-4">
+                    <CardHeader
+                      title={
+                        <Skeleton
+                          variant="text"
+                          sx={{ fontSize: "1rem", width: "60%" }}
+                        />
+                      }
+                      subheader={
+                        <Skeleton
+                          variant="text"
+                          sx={{ fontSize: "0.875rem", width: "80%" }}
+                        />
+                      }
+                    />
                   </Card>
-                )
-            )
-          ) : (
-            <div>Stam</div>
-          )}
+                </Grid>
+              ))}
         </Grid>
       </Grid>
     </div>
